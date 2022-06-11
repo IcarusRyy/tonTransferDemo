@@ -7,8 +7,7 @@ const Home: NextPage = () => {
   const tonweb = new TonWeb(
     // new TonWeb.HttpProvider("https://testnet.toncenter.com/")
     new TonWeb.HttpProvider("https://testnet.toncenter.com/api/v2/jsonRPC", {
-      apiKey:
-        "bc49cc55b5041564a297b93691f7db607b4874ddca535bce003afc661e16d4fa",
+      apiKey: "",
     })
 
     // new TonWeb.HttpProvider("https://scalable-api.tonwhales.com/jsonRPC")
