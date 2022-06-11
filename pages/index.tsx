@@ -30,9 +30,12 @@ const Home: NextPage = () => {
   //   wc: 0,
   // })
   let wallet = new WalletClass(tonweb.provider, {
-    // address: "kQBzGjj9GnmoWJI8TiYPVMs3NhQJZmrnPZ0bLxZ1sioynlaZ",
+    // wallet contract address
+    address: "kQBzGjj9GnmoWJI8TiYPVMs3NhQJZmrnPZ0bLxZ1sioynlaZ",
+    wc: 0,
+    walletId: 0,
     // EQBBCSxCCS9szvrRTxH_IKWnvqEmObubyLUIWtLufLYSrDhY
-    address: "EQBBCSxCCS9szvrRTxH_IKWnvqEmObubyLUIWtLufLYSrDhY",
+    // address: "EQBBCSxCCS9szvrRTxH_IKWnvqEmObubyLUIWtLufLYSrDhY",
   })
   const getSeqno = async () => {
     const res = await wallet.methods.seqno().call()
@@ -75,11 +78,12 @@ const Home: NextPage = () => {
   }
 
   const transfer = async () => {
-    console.log(keyPair.secretKey, "kep")
+    console.log(keyPair.secretKey, "keyPair.secretKey")
     const transfer = wallet.methods.transfer({
       secretKey: keyPair.secretKey,
-      // toAddress: "EQBBCSxCCS9szvrRTxH_IKWnvqEmObubyLUIWtLufLYSrDhY",
-      toAddress: "EQBKqciVdby5paj95Egqr8RBUTro81Q4UceUxxq5_ayw8MqB",
+      // my testnet wallet address
+      toAddress: "EQBBCSxCCS9szvrRTxH_IKWnvqEmObubyLUIWtLufLYSrDhY",
+      // toAddress: "EQBKqciVdby5paj95Egqr8RBUTro81Q4UceUxxq5_ayw8MqB",
       amount: tonweb.utils.toNano("0.5"),
       seqno: Number(getSeqno()),
       payload: "hellow",
@@ -145,15 +149,11 @@ const Home: NextPage = () => {
       },
     ])
   }
-  // 发起转账
-  // const handleTransfer = async () => {
-  //   await window.ton.send('ton_sendTransaction')
-  // }
   useEffect(() => {
     onConnect()
   }, [])
 
-  // 取钱
+  // 取钱 doWithDraw
   const doWithdraw = async (withDrwalRequest: any) => {
     console.log(withDrwalRequest, "withDrwalRequest")
     const seqno: number = (await wallet.methods.seqno().call()) || 0
@@ -221,7 +221,7 @@ const Home: NextPage = () => {
   const init = async () => {
     // 从数据库中获取队列中的第一个提款请求
     const withDrwalRequest: any = {
-      amount: TonWeb.utils.toNano(2), // 2TON
+      amount: TonWeb.utils.toNano("2"), // 2TON
       toAddress: "EQBBCSxCCS9szvrRTxH_IKWnvqEmObubyLUIWtLufLYSrDhY",
     }
     // 如果提现请求没有seqno，那么我们从网络中去除当前钱包的seqno
@@ -247,11 +247,11 @@ const Home: NextPage = () => {
     <>
       <div>helloworld</div>
       <button onClick={callContractMethods}>hello World</button>
-      <button onClick={getBalance}>ballance</button>
-      <button onClick={getAddress}>contract Address</button>
+      <button onClick={getBalance}>wallet contract ballance</button>
+      <button onClick={getAddress}>wallet contract Address</button>
       <button onClick={handleTransfer}>handleTransfer</button>
       <button onClick={getWalletAddress}>wallet address</button>
-      <button onClick={transfer}>transfer</button>
+      {/* <button onClick={transfer}>transfer</button> */}
       <button onClick={init}>init</button>
     </>
   )
