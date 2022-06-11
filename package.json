@@ -9,11 +9,16 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "bn.js": "^5.2.1",
     "next": "12.1.6",
     "react": "18.1.0",
-    "react-dom": "18.1.0"
+    "react-dom": "18.1.0",
+    "ton": "^11.14.0",
+    "tonweb": "^0.0.43",
+    "tweetnacl": "^1.0.3"
   },
   "devDependencies": {
+    "@types/bn.js": "^5.1.0",
     "@types/node": "17.0.40",
     "@types/react": "18.0.12",
     "@types/react-dom": "18.0.5",
