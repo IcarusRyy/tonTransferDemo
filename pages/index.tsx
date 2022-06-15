@@ -14,9 +14,13 @@ const Home: NextPage = () => {
   )
   // const contract = new TestContract
   // nacl库用于创建密钥对
-  const nacl = tonweb.utils.nacl
-  // 创建新的密钥对
-  const keyPair = nacl.sign.keyPair()
+  // const nacl = tonweb.utils.nacl
+  // // 创建新的密钥对
+  // const keyPair = nacl.sign.keyPair()
+  const secretKey = TonWeb.utils.hexToBytes(
+    "F182111193F30D79D517F2339A1BA7C25FDF6C52142F0F2C1D960A1F1D65E1E4"
+  )
+  const keyPair = TonWeb.utils.nacl.sign.keyPair.fromSeed(secretKey)
   // 为钱包智能合约创建接口
   // let wallet = tonweb.wallet.create({
   //   address: "kQBzGjj9GnmoWJI8TiYPVMs3NhQJZmrnPZ0bLxZ1sioynlaZ",
@@ -33,12 +37,13 @@ const Home: NextPage = () => {
     address: "kQBzGjj9GnmoWJI8TiYPVMs3NhQJZmrnPZ0bLxZ1sioynlaZ",
     wc: 0,
     walletId: 0,
-    // EQBBCSxCCS9szvrRTxH_IKWnvqEmObubyLUIWtLufLYSrDhY
     // address: "EQBBCSxCCS9szvrRTxH_IKWnvqEmObubyLUIWtLufLYSrDhY",
+    // EQBzGjj9GnmoWJI8TiYPVMs3NhQJZmrnPZ0bLxZ1sioynu0T
+    // kQBzGjj9GnmoWJI8TiYPVMs3NhQJZmrnPZ0bLxZ1sioynlaZ
   })
   const getSeqno = async () => {
     const res = await wallet.methods.seqno().call()
-    console.log(res, "seqmp")
+    console.log(res, "seqno")
     console.log(Number(res), "getSeqno")
     return res
   }
@@ -62,7 +67,7 @@ const Home: NextPage = () => {
   }
   const getWalletAddress = async () => {
     const res = await wallet.getAddress()
-    console.log(res.toString(true, true, true), "钱包地址")
+    console.log(res.toString(true, true, true, false), "钱包地址")
   }
   const onConnect = async () => {
     const provider = (window as any).ton
@@ -122,6 +127,14 @@ const Home: NextPage = () => {
     console.log(Number(res.stack[0][1]).toString(10), "res.stack")
     // console.log(parseNumber(new BN(eval(res.stack[0][1]))))
   }
+  const getPublicKey = async () => {
+    const res = await tonweb.call(
+      "kQBzGjj9GnmoWJI8TiYPVMs3NhQJZmrnPZ0bLxZ1sioynlaZ",
+      "get_public_eky"
+    )
+    console.log(res, "public Key")
+    console.log(Number(res.stack[0][1]).toString(10), "public Key")
+  }
   const getBalance = async () => {
     const address = "kQBzGjj9GnmoWJI8TiYPVMs3NhQJZmrnPZ0bLxZ1sioynlaZ"
     const balance = await tonweb.getBalance(address)
@@ -135,7 +148,7 @@ const Home: NextPage = () => {
   // 获取合约地址
   const getAddress = async () => {
     const addr = await tonweb.Address
-    console.log(addr, "addr")
+    console.log(addr.toString(), "addr")
   }
   // 调用钱包
   const handleTransfer = async () => {
@@ -166,10 +179,8 @@ const Home: NextPage = () => {
       await tonweb.provider.getBalance((await wallet.getAddress()).toString())
     )
     console.log(balance, "dowithdraw  balance")
-    console.log(
-      withDrwalRequest.amount.gte(balance),
-      "withDrwalRequest.amount.get(balance)"
-    )
+    const a = withDrwalRequest.amount.gte(balance)
+    console.log(a, "withDrwalRequest.amount.get(balance)")
     if (withDrwalRequest.amount.gte(balance)) {
       console.log("余额不足，无法取款")
       return false
@@ -182,7 +193,7 @@ const Home: NextPage = () => {
     console.log(info, "info")
     if (info.state !== "active") {
       // 转换为非反弹
-      toAddress = new tonweb.utils.Address(toAddress).toString(
+      toAddress = new TonWeb.utils.Address(toAddress).toString(
         true,
         true,
         false
@@ -203,12 +214,14 @@ const Home: NextPage = () => {
       // 二进制BoC格式的序列化传输查询
       const boc = await query.toBoc(false)
       // base64格式
-      const bocBase64 = tonweb.utils.bytesToBase64(boc)
+      const bocBase64 = TonWeb.utils.bytesToBase64(boc)
       // 向网络发送传输请求
       await tonweb.provider.sendBoc(bocBase64)
     } else {
       // 向网络发送传输请求
-      await transfer.send()
+      console.log("send")
+      const res = await transfer.send()
+      console.log(res, "ressss")
     }
   }
   // 注意
@@ -246,6 +259,7 @@ const Home: NextPage = () => {
     <>
       <div>helloworld</div>
       <button onClick={callContractMethods}>hello World</button>
+      <button onClick={getPublicKey}>get contract public key</button>
       <button onClick={getBalance}>wallet contract ballance</button>
       <button onClick={getAddress}>wallet contract Address</button>
       <button onClick={handleTransfer}>handleTransfer</button>
