@@ -2060,6 +2060,13 @@ ton@^11.14.0:
     ton-crypto "2.1.0"
     tweetnacl "1.0.3"
 
+tonweb-mnemonic@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/tonweb-mnemonic/-/tonweb-mnemonic-1.0.1.tgz#bb1b8bb6220f56f8e230b8a8f9555ff5bcbd4681"
+  integrity sha512-YQAEXQHBHb0dnNy50bwIutXwyWa6Den7+cLcXWoG7ZClcqo4bjALOr6tnIqI+hs5jab+AGSsRjilxcp8ao/CpA==
+  dependencies:
+    tweetnacl "^1.0.3"
+
 tonweb@^0.0.43:
   version "0.0.43"
   resolved "https://registry.yarnpkg.com/tonweb/-/tonweb-0.0.43.tgz#c659dd806aaa982413ffda33762ddca204da87a9"

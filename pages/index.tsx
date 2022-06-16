@@ -1,74 +1,42 @@
 import type { NextPage } from "next"
 import { useEffect } from "react"
 import TonWeb from "tonweb"
+
 // import nacl from "tweetnacl"
 const BN = require("bn.js")
 const Home: NextPage = () => {
   const tonweb = new TonWeb(
     // new TonWeb.HttpProvider("https://testnet.toncenter.com/")
     new TonWeb.HttpProvider("https://testnet.toncenter.com/api/v2/jsonRPC", {
-      apiKey: "",
+      apiKey:
+        "bc49cc55b5041564a297b93691f7db607b4874ddca535bce003afc661e16d4fa",
     })
 
     // new TonWeb.HttpProvider("https://scalable-api.tonwhales.com/jsonRPC")
   )
-  // const contract = new TestContract
-  // nacl库用于创建密钥对
-  // const nacl = tonweb.utils.nacl
-  // // 创建新的密钥对
-  // const keyPair = nacl.sign.keyPair()
+
+  // const keyPair = TonWeb.utils.nacl.sign.keyPair();
+
+  // console.log(TonWeb.utils.bytesToHex(keyPair.publicKey), 'publicKey');
+  // console.log(TonWeb.utils.bytesToHex(keyPair.secretKey), 'secretKey')
+  // 13e06eb8c27684a04b6f1c9979ae258e1dbb56882143f8f521a54eb02dd4565c  publicKey
+  //  6161307029c80bcfe866b8d3222fe02a7ff0bbb1a83ed15d0e2dbf92848c26a313e06eb8c27684a04b6f1c9979ae258e1dbb56882143f8f521a54eb02dd4565c  secretKey
+
+  // kQAPXqnvuwOjamm_4rsLGpgPY7R3kPYUXKwtskEV0c_zJi3v   wallet contract address
+
   const secretKey = TonWeb.utils.hexToBytes(
-    "F182111193F30D79D517F2339A1BA7C25FDF6C52142F0F2C1D960A1F1D65E1E4"
+    "6161307029c80bcfe866b8d3222fe02a7ff0bbb1a83ed15d0e2dbf92848c26a3"
   )
+  console.log(secretKey, "secreKey")
   const keyPair = TonWeb.utils.nacl.sign.keyPair.fromSeed(secretKey)
-  // 为钱包智能合约创建接口
-  // let wallet = tonweb.wallet.create({
-  //   address: "kQBzGjj9GnmoWJI8TiYPVMs3NhQJZmrnPZ0bLxZ1sioynlaZ",
-  // })
-  // const simpleWallet = new tonweb.wallet.all.SimpleWalletContract({publicKey: keyPair.publicKey, wc: 0})
-  // let wallet = tonweb.wallet.create({ publicKey: keyPair.publicKey, wc: 0 })
-  const WalletClass = tonweb.wallet.all.v3R2
-  // let wallet = new WalletClass(tonweb.provider, {
-  //   publicKey: keyPair.publicKey,
-  //   wc: 0,
-  // })
-  let wallet = new WalletClass(tonweb.provider, {
-    // wallet contract address
-    address: "kQBzGjj9GnmoWJI8TiYPVMs3NhQJZmrnPZ0bLxZ1sioynlaZ",
+
+  const wallet = tonweb.wallet.create({
+    address: "kQAPXqnvuwOjamm_4rsLGpgPY7R3kPYUXKwtskEV0c_zJi3v",
     wc: 0,
     walletId: 0,
-    // address: "EQBBCSxCCS9szvrRTxH_IKWnvqEmObubyLUIWtLufLYSrDhY",
-    // EQBzGjj9GnmoWJI8TiYPVMs3NhQJZmrnPZ0bLxZ1sioynu0T
-    // kQBzGjj9GnmoWJI8TiYPVMs3NhQJZmrnPZ0bLxZ1sioynlaZ
+    publicKey: keyPair.publicKey,
   })
-  const getSeqno = async () => {
-    const res = await wallet.methods.seqno().call()
-    console.log(res, "seqno")
-    console.log(Number(res), "getSeqno")
-    return res
-  }
-  // 部署
-  // 部署方法deploy
-  const deploy = wallet.deploy(keyPair.secretKey)
-  // 获取部署的估计费用
-  const deployFee = async () => {
-    const res = await deploy.estimateFee()
-    console.log(res, "deployFee")
-  }
-  // 部署钱包智能合约到区块链上
-  const deploySended = async () => {
-    const res = await deploy.send()
-    console.log(res, "deploySended")
-  }
-  // 获取部署查询单元
-  const deployQuery = async () => {
-    const res = await deploy.getQuery()
-    console.log(res, "deployQuery")
-  }
-  const getWalletAddress = async () => {
-    const res = await wallet.getAddress()
-    console.log(res.toString(true, true, true, false), "钱包地址")
-  }
+
   const onConnect = async () => {
     const provider = (window as any).ton
     console.log(provider, "provider")
@@ -80,47 +48,17 @@ const Home: NextPage = () => {
       console.log(account, "account")
     }
   }
+  const walletBalance = async () => {
+    const res = await tonweb.getBalance(
+      "kQAPXqnvuwOjamm_4rsLGpgPY7R3kPYUXKwtskEV0c_zJi3v"
+    )
+    console.log(res, "钱包余额")
+  }
 
-  const transfer = async () => {
-    console.log(keyPair.secretKey, "keyPair.secretKey")
-    const transfer = wallet.methods.transfer({
-      secretKey: keyPair.secretKey,
-      // my testnet wallet address
-      toAddress: "EQBBCSxCCS9szvrRTxH_IKWnvqEmObubyLUIWtLufLYSrDhY",
-      // toAddress: "EQBKqciVdby5paj95Egqr8RBUTro81Q4UceUxxq5_ayw8MqB",
-      amount: tonweb.utils.toNano("0.5"),
-      seqno: Number(getSeqno()),
-      payload: "hellow",
-      sendMode: 3,
-    })
-    await transfer.send()
-  }
-  const parseNumber = (
-    num: any,
-    units: number = 9,
-    decimalPoints: number = 4
-  ): number => {
-    if (num.toString().length <= 9) {
-      console.log(num, "num")
-      return parseFloat(
-        parseFloat(
-          "0." + num.toString().padStart(units).replaceAll(" ", "0")
-        ).toFixed(decimalPoints)
-      )
-    } else {
-      return parseFloat(
-        parseFloat(
-          num.div(new BN(10 ** units)).toString() +
-            "." +
-            num.mod(new BN(10 ** units)).toString()
-        ).toFixed(decimalPoints)
-      )
-    }
-  }
   // 调用合约方法  call contract methods
   const callContractMethods = async () => {
     const res = await tonweb.call(
-      "kQBzGjj9GnmoWJI8TiYPVMs3NhQJZmrnPZ0bLxZ1sioynlaZ",
+      "kQAPXqnvuwOjamm_4rsLGpgPY7R3kPYUXKwtskEV0c_zJi3v",
       "hello_world"
     )
     console.log(res, "res")
@@ -129,37 +67,18 @@ const Home: NextPage = () => {
   }
   const getPublicKey = async () => {
     const res = await tonweb.call(
-      "kQBzGjj9GnmoWJI8TiYPVMs3NhQJZmrnPZ0bLxZ1sioynlaZ",
-      "get_public_eky"
+      "kQAPXqnvuwOjamm_4rsLGpgPY7R3kPYUXKwtskEV0c_zJi3v",
+      "get_public_key"
     )
     console.log(res, "public Key")
     console.log(Number(res.stack[0][1]).toString(10), "public Key")
   }
-  const getBalance = async () => {
-    const address = "kQBzGjj9GnmoWJI8TiYPVMs3NhQJZmrnPZ0bLxZ1sioynlaZ"
-    const balance = await tonweb.getBalance(address)
-    console.log(balance, "balance")
-    console.log(parseNumber(new BN(balance)), "bbalance")
-    // return parseNumber(new BN(balance))
-  }
-  // const transfer = async () => {
-  //   await tonweb.transfer()
-  // }
-  // 获取合约地址
-  const getAddress = async () => {
-    const addr = await tonweb.Address
-    console.log(addr.toString(), "addr")
-  }
-  // 调用钱包
-  const handleTransfer = async () => {
-    await window.ton.send("ton_sendTransaction", [
-      {
-        to: "kQBzGjj9GnmoWJI8TiYPVMs3NhQJZmrnPZ0bLxZ1sioynlaZ",
-        value: "200000000", // 10000 nanotons = 0.00001 TONs
-        data: "dapp test",
-        dataType: "text",
-      },
-    ])
+  // 部署钱包智能合约到区块链上
+  const deploySended = async () => {
+    const deploy = wallet.deploy(keyPair.secretKey)
+
+    const res = await deploy.send()
+    console.log(res, "deploySended")
   }
   useEffect(() => {
     onConnect()
@@ -233,7 +152,7 @@ const Home: NextPage = () => {
   const init = async () => {
     // 从数据库中获取队列中的第一个提款请求
     const withDrwalRequest: any = {
-      amount: TonWeb.utils.toNano("2"), // 2TON
+      amount: TonWeb.utils.toNano("1"), // 2TON
       toAddress: "EQBBCSxCCS9szvrRTxH_IKWnvqEmObubyLUIWtLufLYSrDhY",
     }
     // 如果提现请求没有seqno，那么我们从网络中去除当前钱包的seqno
@@ -260,12 +179,9 @@ const Home: NextPage = () => {
       <div>helloworld</div>
       <button onClick={callContractMethods}>hello World</button>
       <button onClick={getPublicKey}>get contract public key</button>
-      <button onClick={getBalance}>wallet contract ballance</button>
-      <button onClick={getAddress}>wallet contract Address</button>
-      <button onClick={handleTransfer}>handleTransfer</button>
-      <button onClick={getWalletAddress}>wallet address</button>
-      {/* <button onClick={transfer}>transfer</button> */}
       <button onClick={init}>init</button>
+      <button onClick={deploySended}>deploy wallet</button>
+      <button onClick={walletBalance}>wallet Balance</button>
     </>
   )
 }
