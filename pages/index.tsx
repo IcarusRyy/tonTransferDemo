@@ -8,30 +8,24 @@ const Home: NextPage = () => {
   const tonweb = new TonWeb(
     // new TonWeb.HttpProvider("https://testnet.toncenter.com/")
     new TonWeb.HttpProvider("https://testnet.toncenter.com/api/v2/jsonRPC", {
-      apiKey:
-        "bc49cc55b5041564a297b93691f7db607b4874ddca535bce003afc661e16d4fa",
+      apiKey: "",
     })
 
     // new TonWeb.HttpProvider("https://scalable-api.tonwhales.com/jsonRPC")
   )
 
-  // const keyPair = TonWeb.utils.nacl.sign.keyPair();
-
-  // console.log(TonWeb.utils.bytesToHex(keyPair.publicKey), 'publicKey');
-  // console.log(TonWeb.utils.bytesToHex(keyPair.secretKey), 'secretKey')
-  // 13e06eb8c27684a04b6f1c9979ae258e1dbb56882143f8f521a54eb02dd4565c  publicKey
-  //  6161307029c80bcfe866b8d3222fe02a7ff0bbb1a83ed15d0e2dbf92848c26a313e06eb8c27684a04b6f1c9979ae258e1dbb56882143f8f521a54eb02dd4565c  secretKey
+  const contract = new TonWeb.Contract(tonweb.provider, {})
 
   // kQAPXqnvuwOjamm_4rsLGpgPY7R3kPYUXKwtskEV0c_zJi3v   wallet contract address
 
   const secretKey = TonWeb.utils.hexToBytes(
-    "6161307029c80bcfe866b8d3222fe02a7ff0bbb1a83ed15d0e2dbf92848c26a3"
+    "497dad45f9b47ec6f346c10a7f3e27858d4ce20ce78adb036ea77598a3188270"
   )
   console.log(secretKey, "secreKey")
   const keyPair = TonWeb.utils.nacl.sign.keyPair.fromSeed(secretKey)
 
   const wallet = tonweb.wallet.create({
-    address: "kQAPXqnvuwOjamm_4rsLGpgPY7R3kPYUXKwtskEV0c_zJi3v",
+    // address: "kQAPXqnvuwOjamm_4rsLGpgPY7R3kPYUXKwtskEV0c_zJi3v",
     wc: 0,
     walletId: 0,
     publicKey: keyPair.publicKey,
@@ -54,7 +48,13 @@ const Home: NextPage = () => {
     )
     console.log(res, "钱包余额")
   }
-
+  // 获取钱包地址
+  const getWalletAddress = async () => {
+    const res = await (
+      await wallet.getAddress()
+    ).toString(true, true, true, false)
+    console.log(res, "钱包地址")
+  }
   // 调用合约方法  call contract methods
   const callContractMethods = async () => {
     const res = await tonweb.call(
@@ -152,7 +152,7 @@ const Home: NextPage = () => {
   const init = async () => {
     // 从数据库中获取队列中的第一个提款请求
     const withDrwalRequest: any = {
-      amount: TonWeb.utils.toNano("1"), // 2TON
+      amount: TonWeb.utils.toNano("0.1"), // 2TON
       toAddress: "EQBBCSxCCS9szvrRTxH_IKWnvqEmObubyLUIWtLufLYSrDhY",
     }
     // 如果提现请求没有seqno，那么我们从网络中去除当前钱包的seqno
@@ -179,9 +179,10 @@ const Home: NextPage = () => {
       <div>helloworld</div>
       <button onClick={callContractMethods}>hello World</button>
       <button onClick={getPublicKey}>get contract public key</button>
-      <button onClick={init}>init</button>
+      <button onClick={init}>transfer to my testnet wallet</button>
       <button onClick={deploySended}>deploy wallet</button>
       <button onClick={walletBalance}>wallet Balance</button>
+      <button onClick={getWalletAddress}>get wallet address</button>
     </>
   )
 }

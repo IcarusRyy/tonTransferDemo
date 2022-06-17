@@ -1,0 +1,15 @@
+{
+  "name": "tontransfer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "tonweb": "^0.0.43",
+    "tonweb-mnemonic": "^1.0.1"
+  }
+}
